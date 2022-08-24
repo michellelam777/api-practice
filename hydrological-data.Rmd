@@ -1,0 +1,38 @@
+---
+title: "API Practice - dataRetreival"
+author: "Michelle Lam"
+date: "2022-08-24"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dataRetrieval)
+library(tidyverse)
+```
+
+# Ventura River Data
+```{r}
+siteNumber <- "11118500" 
+VenturaInfo <- readNWISsite(siteNumber)
+parameterCd <- "00060"
+startDate <- "2019-10-01"  
+endDate <- "2020-10-05" 
+
+discharge <- readNWISdv(siteNumber, 
+                    parameterCd, startDate, endDate)
+```
+
+# Create a plot of discharge
+```{r}
+ggplot(data = discharge, aes(y = X_00060_00003, x = Date)) +
+  geom_line()
+```
+
+# Get Stream Gage Data
+```{r}
+gage <- readNWISdv(siteNumber, parameterCd = "00065", startDate = min(Date), endDate = max(Date))
+
+```
+

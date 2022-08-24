@@ -1,0 +1,54 @@
+---
+title: "API Practice - metajam"
+author: "Michelle Lam"
+date: "2022-08-24"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(metajam)
+library(tidyverse)
+```
+
+# Download and read in Data
+```{r}
+# store url of dataset and store pathway where you want to download the data to
+data <- "https://knb.ecoinformatics.org/knb/d1/mn/v2/object/urn%3Auuid%3A7fc6f6db-c5ea-426a-a743-1f2edafb43b8"
+path <- "/Users/michellelam/github/api-practice"
+
+# use metajam to download the data specifying the dataset URL and pathway of where to store it
+metajam::download_d1_data(data, path)
+
+# use metajam to read in the data
+household_language <- read_d1_files("/Users/michellelam/github/api-practice/doi_10.5063_F1CJ8BPH__household_language__csv")
+
+# Create a data frame from the data in the downloaded folder
+dataframe <- household_language$data
+```
+
+```{r}
+only_english <- dataframe |>
+  filter(Year >= 2009, 
+         Year <= 2015 ) |> 
+  mutate(percent_english = ((speak_only_english/total)*100)) |>
+  group_by(Year) |>
+  summarize(avg_percent = mean(percent_english, na.rm = TRUE))
+ 
+ggplot(data = only_english, aes(x = Year, y = avg_percent)) +
+  geom_line()
+
+
+only_english1 <- dataframe |>
+  filter(Year >= 2009, 
+         Year <= 2015 ) |> 
+  group_by(Year) |>
+  summarize(percent_english = sum(speak_only_english)/sum(total)*100)
+
+ggplot(data = only_english1, aes(x = Year, y = percent_english)) +
+  geom_line()
+
+  
+```
+
